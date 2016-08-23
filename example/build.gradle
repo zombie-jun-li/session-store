@@ -1,0 +1,10 @@
+apply plugin: "war"
+
+dependencies {
+    compile 'org.springframework:spring-context:4.2.5.RELEASE'
+    compile 'org.springframework:spring-context-support:4.2.5.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.2.5.RELEASE'
+    compile 'org.javassist:javassist:3.18.0-GA'
+    providedCompile  'javax.servlet:javax.servlet-api:3.1.0'
+    compile project(':session')
+}

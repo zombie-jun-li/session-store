@@ -1,0 +1,6 @@
+dependencies {
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'redis.clients:jedis:2.9.0'
+    compile 'javax.inject:javax.inject:1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
+}
