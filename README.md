@@ -1,12 +1,12 @@
-# session-store
+# Session-store
 Distrbuted session management with redis
 
 # Simple usage
-Register a filter proxy
+# Register a filter proxy
 	new DelegatingFilterProxy("sessionFilter")
 
-Register spring bean
-	@Bean
+# Register spring bean
+    @Bean
     public SessionFilter sessionFilter() {
         SessionFilter sessionFilter = new SessionFilter();
         sessionFilter.setSessionStore(sessionStore());
