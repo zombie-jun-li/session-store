@@ -3,7 +3,7 @@ package cookie;
 import javax.servlet.http.Cookie;
 
 /**
- * Created by li on 2016/6/10.
+ * Created by jun.
  */
 public final class CookieBuilder {
     private Cookie cookie;

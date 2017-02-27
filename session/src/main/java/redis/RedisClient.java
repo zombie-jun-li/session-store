@@ -13,11 +13,11 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
- * Created by li on 2016/8/3.
+ * Created by jun.
  */
 public class RedisClient {
     @Inject
-    JedisPool jedisPool;
+    private JedisPool jedisPool;
 
     public <T> T execute(Command<T> command) {
         Jedis jedis = jedisPool.getResource();

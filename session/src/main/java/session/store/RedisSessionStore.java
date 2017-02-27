@@ -1,6 +1,7 @@
 package session.store;
 
 
+
 import redis.RedisClient;
 import session.MapSession;
 import util.Key;
@@ -8,18 +9,18 @@ import util.Key;
 import javax.inject.Inject;
 
 /**
- * Created by li on 2016/6/13.
+ * Created by jun.
  */
 public class RedisSessionStore extends SessionStore {
 
-    @Inject
     private RedisClient redisClient;
 
     @Override
     public MapSession get(String sessionId) {
         MapSession mapSession = redisClient.get(createSessionKey(sessionId));
-        if (null == mapSession) mapSession = new MapSession();
-        mapSession.setMaxInactiveInterval(getMaxInactiveInterval());
+        if (null != mapSession) {
+            mapSession.setMaxInactiveInterval(getMaxInactiveInterval());
+        }
         return mapSession;
     }
 
@@ -35,5 +36,10 @@ public class RedisSessionStore extends SessionStore {
 
     private Key<MapSession> createSessionKey(String sessionId) {
         return Key.key(sessionId, MapSession.class);
+    }
+
+    @Inject
+    public void setRedisClient(RedisClient redisClient) {
+        this.redisClient = redisClient;
     }
 }

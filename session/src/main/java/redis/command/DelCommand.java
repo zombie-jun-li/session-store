@@ -4,7 +4,7 @@ import redis.clients.jedis.Jedis;
 import util.Key;
 
 /**
- * Created by li on 2016/8/6.
+ * Created by jun.
  */
 public class DelCommand<T> implements Command<Long> {
 

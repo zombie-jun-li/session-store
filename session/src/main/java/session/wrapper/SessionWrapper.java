@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSessionContext;
 import java.util.Enumeration;
 
 /**
- * Created by li on 2016/6/10.
+ * Created by jun.
  */
 public abstract class SessionWrapper implements HttpSession {
 
@@ -28,7 +28,7 @@ public abstract class SessionWrapper implements HttpSession {
 
     @Override
     public Object getValue(String name) {
-        throw new UnsupportedOperationException();
+        return getAttribute(name);
     }
 
     @Override
@@ -43,12 +43,12 @@ public abstract class SessionWrapper implements HttpSession {
 
     @Override
     public void putValue(String name, Object value) {
-        throw new UnsupportedOperationException("deprecated");
+        setAttribute(name, value);
     }
 
     @Override
     public void removeValue(String name) {
-        throw new UnsupportedOperationException("deprecated");
+        removeAttribute(name);
     }
 
     @Override

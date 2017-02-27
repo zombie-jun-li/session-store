@@ -1,7 +1,7 @@
 package util;
 
 /**
- * Created by li on 2016/8/3.
+ * Created by jun.
  */
 public abstract class TypeConverter {
 

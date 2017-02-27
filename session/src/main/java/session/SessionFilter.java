@@ -1,5 +1,6 @@
 package session;
 
+
 import session.store.LocalSessionStore;
 import session.store.SessionStore;
 
@@ -14,11 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by li on 2016/6/10.
+ * Created by jun.
  */
 public class SessionFilter implements Filter {
 
-    private static final String ATTRIBUTE_CONTEXT_INITIALIZED = SessionFilter.class.getName() + ".CONTEXT_INITIALIZED";
+    private static final String ATTRIBUTE_CONTEXT_INITIALIZED = SessionFilter.class.getName() + ".SESSION_ID_INITIALIZED";
 
     private SessionStore sessionStore = new LocalSessionStore();
 
@@ -39,19 +40,19 @@ public class SessionFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        // todo check why one url request multi times
-        HttpRequestWrapper servletRequest = new HttpRequestWrapper(sessionStore, httpServletRequest, (HttpServletResponse) response);
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        HttpRequestWrapper servletRequest = new HttpRequestWrapper(sessionStore, httpServletRequest, httpServletResponse);
+        HttpResponseWrapper servletResponse = new HttpResponseWrapper(httpServletResponse, servletRequest);
         try {
-            chain.doFilter(servletRequest, response);
             servletRequest.setAttribute(ATTRIBUTE_CONTEXT_INITIALIZED, Boolean.TRUE);
+            chain.doFilter(servletRequest, servletResponse);
         } finally {
             servletRequest.saveSession();
         }
     }
 
     private boolean initialized(HttpServletRequest request) {
-        Boolean initialized = (Boolean) request.getAttribute(ATTRIBUTE_CONTEXT_INITIALIZED);
-        return Boolean.TRUE.equals(initialized);
+        return Boolean.TRUE.equals(request.getAttribute(ATTRIBUTE_CONTEXT_INITIALIZED));
     }
 
     public void setSessionStore(SessionStore sessionStore) {

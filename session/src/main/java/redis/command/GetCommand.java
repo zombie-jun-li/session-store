@@ -5,7 +5,7 @@ import util.Key;
 import util.TypeConverter;
 
 /**
- * Created by li on 2016/8/4.
+ * Created by jun.
  */
 public class GetCommand<T> implements Command<T> {
     Key<T> key;

@@ -3,7 +3,7 @@ package redis.command;
 import redis.clients.jedis.Jedis;
 
 /**
- * Created by li on 2016/8/4.
+ * Created by jun.
  */
 public interface Command<T> {
     T execute(Jedis jedis);

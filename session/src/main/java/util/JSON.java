@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
- * Created by li on 2016/4/9.
+ * Created by jun.
  */
 public final class JSON {
 
