@@ -1,7 +1,7 @@
 package exception;
 
 /**
- * Created by li on 2016/8/6.
+ * Created by jun.
  */
 public class NullException extends RuntimeException {
     public NullException() {

@@ -3,4 +3,6 @@ dependencies {
     compile 'redis.clients:jedis:2.9.0'
     compile 'javax.inject:javax.inject:1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-all:2.0.2-beta"
 }

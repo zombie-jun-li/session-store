@@ -4,7 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by li on 2016/6/16.
+ * Created by jun.
  */
 public abstract class WebUtils {
     public static Cookie getCookie(HttpServletRequest request, String name) {

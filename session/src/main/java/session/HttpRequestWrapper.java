@@ -1,5 +1,7 @@
 package session;
 
+
+
 import cookie.CookieBuilder;
 import session.store.SessionStore;
 import session.wrapper.GenericSessionWrapper;
@@ -13,33 +15,38 @@ import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 /**
- * Created by li on 2016/6/13.
+ * Created by jun.
  */
 public class HttpRequestWrapper extends HttpServletRequestWrapper {
 
     private static final String SESSION_COOKIE_NAME = "session_id";
 
+    private boolean saved;
+
     private SessionStore sessionStore;
 
-    private HttpServletRequest httpServletRequest;
+    private HttpServletRequest request;
 
-    private HttpServletResponse httpServletResponse;
+    private HttpServletResponse response;
 
     private GenericSessionWrapper sessionWrapper;
 
     public HttpRequestWrapper(SessionStore sessionStore, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         super(httpServletRequest);
         this.sessionStore = sessionStore;
-        this.httpServletRequest = httpServletRequest;
-        this.httpServletResponse = httpServletResponse;
+        this.request = httpServletRequest;
+        this.response = httpServletResponse;
     }
 
     @Override
     public HttpSession getSession(boolean create) {
+        if (null != sessionWrapper && !sessionWrapper.isValid()) {
+            throw new IllegalStateException("Session invalid.");
+        }
         if (null == sessionWrapper && create) {
             String sessionId = getAndSetCookieSessionId(false);
             MapSession mapSession = sessionStore.get(sessionId);
-            sessionWrapper = new GenericSessionWrapper(sessionId, mapSession, httpServletRequest.getServletContext());
+            sessionWrapper = new GenericSessionWrapper(sessionId, null == mapSession ? new MapSession() : mapSession, request.getServletContext());
         }
         if (null != sessionWrapper) sessionWrapper.setLastAccessedTime(System.currentTimeMillis());
         return sessionWrapper;
@@ -51,38 +58,53 @@ public class HttpRequestWrapper extends HttpServletRequestWrapper {
     }
 
     public void saveSession() {
-        if (null != sessionWrapper && sessionWrapper.isChanged()) {
-            sessionStore.save(sessionWrapper.getId(), sessionWrapper.getMapSession());
+        if (saved) return;
+        if (null == sessionWrapper) return;
+        String sessionId = sessionWrapper.getId();
+        if (!sessionWrapper.isValid()) {
+            sessionStore.delete(sessionId);
+            delCookieSessionId();
+        } else if (sessionWrapper.isChanged()) {
+            saveSession(sessionId, sessionWrapper.getMapSession());
         }
+        saved = true;
     }
 
     @Override
     public String changeSessionId() {
-        if (null == sessionWrapper) {
-            String oldSessionId = getAndSetCookieSessionId(false);
-            MapSession mapSession = sessionStore.get(oldSessionId);
-            if (mapSession == null) {
-                throw new IllegalStateException("There is no session associated with this request.");
-            }
-            sessionWrapper = new GenericSessionWrapper(oldSessionId, mapSession, httpServletRequest.getServletContext());
-            sessionStore.delete(oldSessionId);
+        String oldSessionId = getAndSetCookieSessionId(false);
+        MapSession mapSession = sessionStore.get(oldSessionId);
+        if (mapSession == null) {
+            throw new IllegalStateException("There is no session associated with this request.");
         }
-        String sessionId = getAndSetCookieSessionId(true);
-        sessionStore.save(sessionId, sessionWrapper.getMapSession());
-        return sessionId;
+        sessionStore.delete(oldSessionId);
+        String newSessionId = getAndSetCookieSessionId(true);
+        saveSession(newSessionId, mapSession);
+        return newSessionId;
     }
 
     private String getAndSetCookieSessionId(boolean overwrite) {
-        Cookie sessionCookie = WebUtils.getCookie(httpServletRequest, SESSION_COOKIE_NAME);
+        Cookie sessionCookie = WebUtils.getCookie(request, SESSION_COOKIE_NAME);
         if (null == sessionCookie || overwrite) {
             String sessionId = generateSessionId();
             sessionCookie = CookieBuilder.build(SESSION_COOKIE_NAME, sessionId).getCookie();
-            httpServletResponse.addCookie(sessionCookie);
+            response.addCookie(sessionCookie);
         }
         return sessionCookie.getValue();
     }
 
+    private void delCookieSessionId() {
+        Cookie sessionCookie = CookieBuilder.build(SESSION_COOKIE_NAME, null).path("/").maxAge(0).getCookie();
+        sessionCookie.setValue(null);
+        sessionCookie.setMaxAge(0);
+        response.addCookie(sessionCookie);
+    }
+
     private String generateSessionId() {
         return UUID.randomUUID().toString();
+    }
+
+    private void saveSession(String sessionId, MapSession mapSession) {
+        sessionStore.save(sessionId, mapSession);
     }
 }

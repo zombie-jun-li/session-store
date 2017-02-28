@@ -6,7 +6,7 @@ import session.MapSession;
 import javax.servlet.ServletContext;
 
 /**
- * Created by li on 2016/6/10.
+ * Created by jun.
  */
 public class GenericSessionWrapper extends SessionWrapper {
 
@@ -14,7 +14,9 @@ public class GenericSessionWrapper extends SessionWrapper {
 
     private MapSession mapSession;
 
-    private Boolean changed = false;
+    private boolean changed;
+
+    private boolean valid = true;
 
     public GenericSessionWrapper(String sessionId, MapSession mapSession, ServletContext servletContext) {
         super(servletContext);
@@ -34,41 +36,46 @@ public class GenericSessionWrapper extends SessionWrapper {
 
     @Override
     public long getLastAccessedTime() {
+        checkState();
         return mapSession.getLastAccessedTime();
     }
 
     @Override
     public void setMaxInactiveInterval(int interval) {
+        checkState();
         changed = true;
         mapSession.setMaxInactiveInterval(interval);
     }
 
     @Override
     public int getMaxInactiveInterval() {
+        checkState();
         return mapSession.getMaxInactiveInterval();
     }
 
     @Override
     public Object getAttribute(String name) {
+        checkState();
         return mapSession.getSessionData().get(name);
     }
 
     @Override
     public void setAttribute(String name, Object value) {
+        checkState();
         changed = true;
         mapSession.getSessionData().put(name, value);
     }
 
     @Override
     public void removeAttribute(String name) {
+        checkState();
         changed = true;
         mapSession.getSessionData().remove(name);
     }
 
     @Override
     public void invalidate() {
-        // todo
-        mapSession.getSessionData().clear();
+        valid = false;
     }
 
     public void setLastAccessedTime(long lastAccessedTime) {
@@ -78,6 +85,16 @@ public class GenericSessionWrapper extends SessionWrapper {
 
     public boolean isChanged() {
         return changed;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void checkState() {
+        if (!isValid()) {
+            throw new IllegalStateException("Session invalid.");
+        }
     }
 
     public MapSession getMapSession() {

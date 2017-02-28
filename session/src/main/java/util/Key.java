@@ -3,7 +3,7 @@ package util;
 import java.util.Date;
 
 /**
- * Created by li on 2016/8/3.
+ * Created by jun.
  */
 public class Key<T> {
     final String name;

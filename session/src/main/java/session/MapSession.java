@@ -1,12 +1,10 @@
 package session;
 
-import session.store.SessionStore;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by li on 2016/6/18.
+ * Created by session.
  */
 public class MapSession {
 
@@ -14,7 +12,7 @@ public class MapSession {
 
     private long lastAccessedTime = creationTime;
 
-    private int maxInactiveInterval = SessionStore.DEFAULT_MAX_INACTIVE_INTERVAL;
+    private int maxInactiveInterval;
 
     private Map<String, Object> sessionData = new HashMap<>();
 
